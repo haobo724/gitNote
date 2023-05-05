@@ -2,6 +2,8 @@
 ===默认远程仓库名为origin===
 1. 从**Remote** repository `clone`项目到本地repository
 2. 在本地repository中新建一个branch用于对项目的修改 `git checkout -b my-feature` (不仅仅是新建了branch而且隐式的把当前的branch内容也复制过去)
+   1. 特别注意：如果要工作的分支不是主分支，而是功能分支，而且本地之前没有这个分支，那clone之后要在本地新建，并且在pull一次
+   2. 如果不确定本地和远程哪个版本更新，可以使用 `git log -1` 查看当前commit版本，然后对比
 3. 进行代码开发
     + 开发完成后，建议使用`git diff` 查看区别
 4. 使用 `git add <file name>` 将想要添加的文件添加到暂存区准备提交
@@ -9,7 +11,7 @@
 6. 使用 `git push origin my-feature` 将本地的my-feature分区推送到远程my-feature分支，如果没有会自动创建
 7. 使用pull request将my-feature合并到main （会使用squash and merge，合并所有不同的commit）
 8. 删除remote的my-feature分支
-9. 回到本地repository，使用`git checkout -D my-feature` 删除本地的my-feature分支，因为功能开发完了，不需要了
+9.  回到本地repository，使用`git checkout -D my-feature` 删除本地的my-feature分支，因为功能开发完了，不需要了
 10. 最后更新local repository的 main分支 使用`git pull`
 
 ## 如果上传了新分支后，在merge之前，main分支有了更新（update）

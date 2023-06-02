@@ -11,7 +11,7 @@
 6. 使用 `git push origin my-feature` 将本地的my-feature分区推送到远程my-feature分支，如果没有会自动创建
 7. 使用pull request将my-feature合并到main （会使用squash and merge，合并所有不同的commit）
 8. 删除remote的my-feature分支
-9.  回到本地repository，使用`git checkout -D my-feature` 删除本地的my-feature分支，因为功能开发完了，不需要了
+9.  回到本地repository，使用`git branch -d my-feature` 删除本地的my-feature分支，因为功能开发完了，不需要了
 10. 最后更新local repository的 main分支 使用`git pull`
 
 ## 如果上传了新分支后，在merge之前，main分支有了更新（update）

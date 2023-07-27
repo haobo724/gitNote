@@ -10,6 +10,7 @@
     + 建议新建.gitignore文件 过滤一些构建文件等不需要的temp files
 5. 使用 `git commit -m "log"` 将暂存区的文件提交到本地仓库中，并产生一条commit记录
 6. 使用 `git push origin my-feature` 将本地的my-feature分区推送到远程my-feature分支，如果没有会自动创建
+    + 如果之前建立过链接可以直接 `git push`
 7. 使用pull request将my-feature合并到main （会使用squash and merge，合并所有不同的commit）
 8. 删除remote的my-feature分支
 9.  回到本地repository，使用`git branch -d my-feature` 删除本地的my-feature分支，因为功能开发完了，不需要了

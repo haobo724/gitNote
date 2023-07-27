@@ -6,7 +6,8 @@
    2. 如果不确定本地和远程哪个版本更新，可以使用 `git log -1` 查看当前commit版本，然后对比
 3. 进行代码开发
     + 开发完成后，建议使用`git diff` 查看区别
-4. 使用 `git add <file name>` 将想要添加的文件添加到暂存区准备提交
+4. 使用 `git add <file name>` 将想要添加的文件添加到暂存区准备提交 / `git add .` 加入目录及其子目录下所有符合条件的文件
+    + 建议新建.gitignore文件 过滤一些构建文件等不需要的temp files
 5. 使用 `git commit -m "log"` 将暂存区的文件提交到本地仓库中，并产生一条commit记录
 6. 使用 `git push origin my-feature` 将本地的my-feature分区推送到远程my-feature分支，如果没有会自动创建
 7. 使用pull request将my-feature合并到main （会使用squash and merge，合并所有不同的commit）

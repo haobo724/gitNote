@@ -1,12 +1,13 @@
 # Git的基本工作流程
 ===默认远程仓库名为origin===
+## 如何对一个已有的仓库进行开发和修改
 1. 从**Remote** repository `clone`项目到本地repository
 2. 在本地repository中新建一个branch用于对项目的修改 `git checkout -b my-feature` (不仅仅是新建了branch而且隐式的把当前的branch内容也复制过去)
    1. 特别注意：如果要工作的分支不是主分支，而是功能分支，而且本地之前没有这个分支，那clone之后要在本地新建，并且在pull一次
    2. 如果不确定本地和远程哪个版本更新，可以使用 `git log -1` 查看当前commit版本，然后对比
 3. 进行代码开发
     + 开发完成后，建议使用`git diff` 查看区别
-4. 使用 `git add <file name>` 将想要添加的文件添加到暂存区准备提交 / `git add .` 加入目录及其子目录下所有符合条件的文件
+4. 使用 `git add <file name>` 将想要添加的文件添加到暂存区准备提交 / `git add .` 会加入目录及其子目录下所有符合条件的文件
     + 建议新建.gitignore文件 过滤一些构建文件等不需要的temp files
 5. 使用 `git commit -m "log"` 将暂存区的文件提交到本地仓库中，并产生一条commit记录
 6. 使用 `git push origin my-feature` 将本地的my-feature分区推送到远程my-feature分支，如果没有会自动创建
@@ -15,6 +16,18 @@
 8. 删除remote的my-feature分支
 9.  回到本地repository，使用`git branch -d my-feature` 删除本地的my-feature分支，因为功能开发完了，不需要了
 10. 最后更新local repository的 main分支 使用`git pull`
+
+## 如何新建一个repository并且把开发的代码上传
+不要在写好代码的但没有git记录文件夹下，试图使用`git init`然后和远程仓库建立连接，很麻烦，建议先clone空的然后放需要的东西进去
+1. 在网页server端新建好repository
+2. 从**Remote** repository `clone`项目到本地
+3. 进入本地文件夹，将需要上传的代码文件拷贝进来
+4. 使用 `git add <file name>` 将想要添加的文件添加到暂存区准备提交 / `git add .` 会加入目录及其子目录下所有符合条件的文件
+5. 使用 `git commit -m "log"` 将暂存区的文件提交到本地仓库中，并产生一条commit记录
+6. 使用 `git branch -M main` 修改分支名字为`main` 个人习惯
+7. 使用 `git push` 将代码推送到远端
+   
+
 
 ## 如果上传了新分支后，在merge之前，main分支有了更新（update）
 1. 将远程main分支pull下来，更新本地的main分支

@@ -37,6 +37,9 @@
    + 如果有冲突，就不得不手动解决，比如某一处修改使用哪个版本。建议使用IDE会方便一些
 4. rebase成功后，整个代码的 track 看作我在main分支最新的update之后又修改了代码
 5. 使用 `git push -f origin my-feature` 因为使用了rebase所以要加上`-f` 强制推送
+## 删除远程仓库的某个文件或文件夹
+  + 场景：已经在远程仓库上传了某些文件或者文件夹发现上传错了
+    + 解决方案 ： `git rm --cached <file/folder>` 然后重新执行push流程同步远程分支
 
 ## 恢复到某个版本
 + 场景1 : 一些改动如删除修改后，但没有`add`，使用`git checkout <file name>`
@@ -50,7 +53,17 @@
   
 还可以用 `git revert`
   + 和`reset`相比，他是带注释的回滚，本质上提交一个新的commit，这个commit的作用是回滚到指定的版本，特色是把回滚操作给记录下来了，一切操作有迹可循
-  
+## 远程仓库分支回退：
+  参考： [远程回退](https://www.cnblogs.com/Super-scarlett/p/8183348.html)
+  1. 远程回退的核心就是使用force push，慎用，尤其在公共分支上
+  2. 在本地需要回滚的分支上使用 `git reset -hard <previous commit id>`
+  3. `git push -f`
+     1. 如果在远程分支回滚后要通知所有人，他们“应该强制”同步自己的本地分支和远程分支 `git reset --hard origin/master` 否则他们再一push会把辛苦回滚的版本取消掉 
+
+在公共分支回退要考虑会覆盖别人之前的提交，因为回退了在此之后的commit就查无此人了
+所以也可以用 `git revert` 回滚版本，同上一节所说`git revert`命令的好处就是不会丢掉别人的提交，即使你撤销后覆盖了别人的提交，他更新代码后，可以在本地用 reset 向前回滚，找到自己的代码，然后拉一下分支，再回来合并上去就可以找回被你覆盖的提交了。
+
+
 ## 如何让本地的branch和远程branch连接（追踪关系建立）
 1. 使用命令`git push --set-upstream origin <local>:<remote>`
 

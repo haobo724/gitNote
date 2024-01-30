@@ -33,6 +33,10 @@
 
 `return *this;` 是在非静态成员函数中使用返回对象本身或者克隆
 
+指针也是一个变量，里面储存的是内存地址，而不是对象本身，就是一段内存地址。
+所以指针指向的都是地址，而不是对象本身，所以指针指向的对象可以改变。也就是为什么指针赋值是会有变量的取地址。`int *p = &a;` 这里的`&`是取地址符，而不是引用符。
+
+T * variable; 代表这个变量是一个指针，指向T类型的变量，*在这是说明符，而不是解引用.
 ### 万能引用
 只有模板和auto关键字两种情况是万能引用
 ```cpp
@@ -42,9 +46,59 @@ T func1(T &&p1){return};
 int a =10;
 auto && i =a;
 ```
-万能引用的效果是，进来不用分左右值，来啥是啥，左值引用实为引用折叠，应用场景？
+万能引用的效果是，如果传入的是左值，那么T就是左值引用，如果传入的是右值，那么T就是右值引用，再配合forward就可以完美转发。
 
-再配合forward就可以完美转发
+左值引用在特定情况下也可以绑定右值，加上const就可以了
+```cpp
+const int & i = 10;
+```
+
+### 完美转发
+使用```std::forward<T>(para)```来完美转发，这样就可以保证传进来的参数是什么类型，就以什么类型传出去，而不是被转换成左值或者右值。作用和意义是减少拷贝构造，提高效率。
+
+
+```cpp
+template<typename T>
+CData* Creator(T&& t) {
+    return new CData(std::forward<T>(t));
+    //return new CData(t); // 会调用拷贝构造函数, 无法区分左值和右值
+}
+int main(void) {
+    std::string str1 = "hello";
+    std::string str2 = " world";
+    CData* p1 = Creator(str1);        // 参数折叠为左值引用，调用CData构造函数
+    CData* p2 = Creator(str1 + str2); // 参数折叠为右值引用，通过std::forward转发给CData，调用移动构造函数
+    delete p2;
+    delete p1;
+
+    return 0;
+}
+```
+
+
+
+### 引用折叠
+所有右值引用折叠到右值引用上仍然是一个右值引用。（A&& && 变成 A&&）。
+所有的其他引用类型之间的折叠都将变成左值引用。 （A& & 变成 A&; A& && 变成 A&; A&& & 变成 A&）。参数被一个左值或左值引用初始化，那么引用将折叠为左值引用。（即：T&& & –> T&）
+
+简单来说：右值经过T&&参数传递，类型保持不变还是右值（引用）；而左值经过T&&变为普通的左值引用。
+```cpp
+template<typename T>
+void func(T&& arg);
+
+int main() {
+  int a = 5;
+  func(a);  // arg为int&，引用折叠为左值引用
+
+  func(10);  // arg为int&&，引用折叠为右值引用
+
+  int& ref = a;
+  func(ref);  // arg为int&，引用不能折叠
+}
+```
+
+
+
 ### lambda
 基本结构 `[]{}` 或者完全体 `[]()->return{}(parameter)`
 ``` cpp

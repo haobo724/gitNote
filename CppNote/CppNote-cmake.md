@@ -228,6 +228,7 @@ MyThread(func,std::ref(varible))
 ``` 
 #### 进程锁
 用`std::lock_guard<std::mutex>` 来保证不会忘记解锁，同时注意作用范围，`lock_guard`和单纯`mutex`的关系类似于指针和智能指针。
+`std::lock_guard`是一个RAII对象，它的构造函数会锁住一个互斥量，而它的析构函数会释放这个互斥量。这样就可以保证在任何情况下，互斥量都会被正确释放。
 
 死锁问题用 `std::lock`+`std::adopt_lock` 解决，前者规定所得顺序，后者只赋予`lock_guard`开锁功能
 

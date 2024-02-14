@@ -37,6 +37,15 @@
    + 如果有冲突，就不得不手动解决，比如某一处修改使用哪个版本。建议使用IDE会方便一些
 4. rebase成功后，整个代码的 track 看作我在main分支最新的update之后又修改了代码
 5. 使用 `git push -f origin my-feature` 因为使用了rebase所以要加上`-f` 强制推送
+
+## 同一分支上，commit时发现自己落后版本了
+1. 先用`git stash` 将当前的修改暂存起来
+2. 使用`git pull` 将远程分支的更新pull下来
+3. 使用`git stash pop` 将之前的修改pop出来
+4. 处理冲突，如果有的话
+5. 使用`git add` `git commit` `git push` 完成提交
+
+
 ## 删除远程仓库的某个文件或文件夹
   + 场景：已经在远程仓库上传了某些文件或者文件夹发现上传错了
     + 解决方案 ： `git rm --cached <file/folder>` 然后重新执行push流程同步远程分支

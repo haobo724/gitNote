@@ -1,4 +1,8 @@
 # CMAKE 和 CPP 经验
+个人心得：
+- 不要畏惧抽象，不要畏惧写类，编译器累不着
+
+
 ## lib and dll
 
     lib 在编译时使用，dll在runtime时使用。
@@ -236,9 +240,6 @@ p2(std::move(p1));//不可以
 ### 模板
 类外写成员函数，记得加上typename，typename 的意义是告诉后面的是个类型，一般是在类内有个using关键字的情况下要注意。模板的实现要放在头文件里，不然会出现链接错误。
 
-## 构造函数
-
-
 
 
 ### STL
@@ -265,6 +266,79 @@ MyThread(func,std::ref(varible))
 `std::lock_guard`是一个RAII对象，它的构造函数会锁住一个互斥量，而它的析构函数会释放这个互斥量。这样就可以保证在任何情况下，互斥量都会被正确释放。
 
 死锁问题用 `std::lock`+`std::adopt_lock` 解决，前者规定所得顺序，后者只赋予`lock_guard`开锁功能
+## 设计模式
+设计模式在我看来就是在程序设计中尽可能地高效，优雅，简洁地去耦合。提高代码的可读性，可维护性，可扩展性。
+### 策略模式
+策略模式是一种定义一系列算法的方法，从概念上来看，所有这些算法完成的都是相同的工作，只是实现不同。它可以以相同的方式调用所有的算法，减少了各种算法类与使用算法类之间的耦合。
+比如正在开发一个有各种算法地集合，其中包括排序算法。排序算法可以有快排，冒泡，插入等等，但是他们的调用方式是一样的，只是实现不同, 如果不考虑策略模式，代码如下
+```cpp
+struct AlgorithmBox{
+    virtual void sort(int* arr,int len) =0;
+}
+
+class AlgorithmBoxSub1:public AlgorithmBox{
+    public:
+        void sort(int* arr,int len) override{
+            printf("quick sort");
+        }
+}
+
+class AlgorithmBoxSub2:public AlgorithmBox{
+    public:
+        void sort(int* arr,int len) override{
+            printf("quick sort");
+        }
+}
+```
+这种情况比较直观好想，用了继承，但是可以看到sub1和sub2的sort部分是完全相同的，假若有一天要修改这个部分，比如发现算法有错或者迭代新的版本，那么就要修改两个类，这就有点麻烦了。
+再或者用户不想使用快排而想使用冒泡，那么还是要修改这个类。
+所以可以用策略模式，将排序算法抽象成一个接口，然后每个排序算法都继承这个接口，这样就可以实现多态，调用时只需要调用接口，不需要关心具体实现。
+```cpp
+class Sort{
+    public:
+        virtual void sort(int* arr,int len) =0;
+}
+
+class QuickSort:public Sort{
+    public:
+        void sort(int* arr,int len) override{
+            printf("quick sort");
+        }
+}
+class BubbleSort:public Sort{
+    public:
+        void sort(int* arr,int len) override{
+            printf("bubble sort");
+        }
+}
+
+class AlgorithmBox{
+    public:
+    AlgorithmBox(Sort* sort):sort(sort){}
+    private:
+        Sort* sort;
+}
+
+class AlgorithmBoxSub1:public AlgorithmBox{
+    public:
+        AlgorithmBoxSub1(Sort* sort):AlgorithmBox(sort){}
+}
+
+int main(){
+    AlgorithmBoxSub1 box(new QuickSort());
+    box.sort->sort(*arr,len);
+}
+
+```
+以上代码解决了排序算法的耦合问题，如果有新的排序算法，只需要继承Sort类，然后在AlgorithmBox里传入新的排序算法就可以了。
+
+- tips: 应该用智能指针来管理Sort类，这样可以避免内存泄漏，比较懒就没写。
+
+
+
+
+### 观察者发布者模式
+观察者模式是一种行为设计模式， 允许一个对象将其状态的改变通知其他对象。这种模式通常用于实现事件处理系统。
 
 
 ## CMAKE 语法进阶

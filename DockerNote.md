@@ -27,7 +27,15 @@ docker是虚拟了应用层，没有自己的OS kernel。而虚拟机是虚拟�
 2. Container是一个运行image实例的地方，可以一个image在不同容器中同时运行
 3. Docker Hub 是推荐的docker Registries 可以下载官方或者个人开发者开发的image，同时也是Docker Desktop的默认下载位置
 
-
+## 常见命令
+  - 登录：docker login -u username -p password 
+    - 默认是docker hub ， 如果是其他的registries，可以在最后添加`registry_url`docker login registry_url
+  - 构建：docker build -t image_name .
+    - 推送的时候需要tag image_name，这个tag也正好指向了要推给哪个repository，例如：docker -t repo_url/repo_name:tag
+  
+  - 推送：docker push image_name
+  - 拉取：docker pull image_name
+  - 运行：docker run image_name
 ## 数据库
   ### 常见数据库类型
   1. 关系型数据库 relational database
@@ -112,4 +120,23 @@ docker是虚拟了应用层，没有自己的OS kernel。而虚拟机是虚拟�
   docker run --rm -v /path/to/host/volume:/source -v my-vol:/dest busybox sh -c "cd /source && tar cf - . | (cd /dest && tar xvf -)"
 
   ```
+
+## docker in docker /在docker container中运行docker command
+   在docker中执行docker命令, 只是调用了顶层host的server
+
+   重要：需要在docker中先安装docker CLI 然后通过docker.sock来和docker daemon通信
+   ``` bash
+   curl https://get.docker.com/ > dockerinstall && chmod 777 dockerinstall && ./dockerinstall
+   ```
+
+  然后在启动docker container的时候
+  ``` shell 
+  -v /var/run/docker.sock:/var/run/docker.sock来实现
+
+  ```
+  最后记得修改docker.sock的权限
+  ``` shell
+  chmod 777 /var/run/docker.sock
+  ```
+  注意： 重启container的时候，docker.sock的权限会被重置，所以需要在启动container的时候要复用之前的权限设置
 

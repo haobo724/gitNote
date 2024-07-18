@@ -116,6 +116,16 @@ pipeline {
     - failure: 失败后执行
     - unstable: 不稳定后执行
     - changed: 改变后执行
+-  withCredentials: 使用凭证
+    - usernamePassword: 用户名密码
+    - secretText: 密文
+    举例：
+    ``` groovy
+    withCredentials([usernamePassword(credentialsId: 'my-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+        sh 'echo $USERNAME'
+        sh 'echo $PASSWORD'
+    }
+    ```
 ### Shared library
 jinkeins的共享库，可以把一些公共的方法放在这里，然后在jenkinsfile中调用, 共享库使用groovy语法。
 

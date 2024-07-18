@@ -1,0 +1,26 @@
+# !/usr/bin.env groovy
+
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building..'}
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Testing..'}
+            }
+        }
+        stage('Deploy') {
+            steps {
+                def dockerCmd = "docker run -d -p 3000:3080 s724/nodejs-ex:1.0"
+                echo 'Deploying....'
+                sshagent(['EC2-SERVER-KEY']) {
+                    sh "ssh -o StrictHostKeyChecking=no ec2-user@3.70.170.123 ${dockerCmd}"
+            }
+        }
+        
+    }
+}

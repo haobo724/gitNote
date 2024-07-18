@@ -21,6 +21,9 @@ docker是虚拟了应用层，没有自己的OS kernel。而虚拟机是虚拟�
    命令行interface，可以和docker server交互
 3. GUI Client
    图像化界面与docker server交互
+4. Compose
+    用于定义和运行多个container的工具
+    - 如果是Linux，需要单独安装，安装参考：https://docs.docker.com/compose/install/
 
 ## Docker images是什么，和container有什么关系
 1. images是一种可运行的应用artifact，一种集合就像zip文件一样打包了所有需要的东西，比如完整的环境配置信息，任何需要的服务
@@ -30,12 +33,12 @@ docker是虚拟了应用层，没有自己的OS kernel。而虚拟机是虚拟�
 ## 常见命令
   - 登录：docker login -u username -p password 
     - 默认是docker hub ， 如果是其他的registries，可以在最后添加`registry_url`docker login registry_url
-  - 构建：docker build -t image_name .
-    - 推送的时候需要tag image_name，这个tag也正好指向了要推给哪个repository，例如：docker -t repo_url/repo_name:tag
+  - 构建：docker build -t repo_name .
+    - 推送的时候需要tag repo_name ，这个tag也正好指向了要推给哪个repository，例如：docker -t repo_url/repo_name:tag, 如果image_name 不是 repo_url/repo_name:tag的形式，那么推送会失败
   
-  - 推送：docker push image_name
-  - 拉取：docker pull image_name
-  - 运行：docker run image_name
+  - 推送：docker push repo_name
+  - 拉取：docker pull repo_name
+  - 运行：docker run repo_name
 ## 数据库
   ### 常见数据库类型
   1. 关系型数据库 relational database
@@ -139,4 +142,15 @@ docker是虚拟了应用层，没有自己的OS kernel。而虚拟机是虚拟�
   chmod 777 /var/run/docker.sock
   ```
   注意： 重启container的时候，docker.sock的权限会被重置，所以需要在启动container的时候要复用之前的权限设置
+
+  ## 如何升级docker内的软件，在不build新的image的情况下
+
+  ### Jenkins
+  - 以root用户登录到jenkins container `$ docker exec -u 0 -it ${dockercontainer ID} /bin/bash`
+  - 下载jenkins war包 `$ wget http://updates.jenkins-ci.org/download/war/2.235.1/jenkins.war`
+  - 移动到jenkins目录 `$ mv jenkins.war /usr/share/jenkins/jenkins.war`
+  - 修改权限 `$ chown jenkins:jenkins /usr/share/jenkins/jenkins.war`
+  - 重启container `$ docker restart ${dockercontainer ID}`
+
+
 

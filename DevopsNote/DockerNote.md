@@ -3,7 +3,7 @@
 ## Best Practice
 FROM nana
 
-![alt text](image.png)
+![alt text](Docker-useful-tipps.png)
 ## 与虚拟机的不同
 一般来说计算机系统可以分为两个部分
 

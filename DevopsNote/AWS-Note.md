@@ -19,7 +19,7 @@
     `export AWS_ACCESS_KEY_ID=xxxx`
     `export AWS_SECRET_ACCESS_KEY=xxxx`
   - 简单语法
-    - `aws command-name --option-name value`
+    - `aws services  command-name --option-name value`
       - filters : 筛选符合特征的资源
         - `--filters "Name=tag:Name,Values=MyInstance"`
         - Name和Values是固定的，tag:Name是筛选的特征，MyInstance是特征的值

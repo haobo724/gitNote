@@ -20,6 +20,16 @@ spec:
         ports:
         - containerPort: 8081
         env:
+        - name: ME_CONFIG_BASICAUTH_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: mongo-root-username
+        - name: ME_CONFIG_BASICAUTH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: mongo-root-password
         - name: ME_CONFIG_MONGODB_ADMINUSERNAME
           valueFrom:
             secretKeyRef:
@@ -35,6 +45,8 @@ spec:
             configMapKeyRef:
               name: k8s-map
               key: database_url
+        - name: ME_CONFIG_MONGODB_ENABLE_ADMIN
+          value: "true"
 ---
 apiVersion: v1
 kind: Service
@@ -43,9 +55,8 @@ metadata:
 spec:
   selector:
     app: mongo-express
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - protocol: TCP
       port: 8081
       targetPort: 8081
-      nodePort: 30000

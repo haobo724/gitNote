@@ -89,7 +89,7 @@ Yaml file 是用来定义k8s资源(Deployment)的文件，可以通过 `kubectl 
   - 匹配方式：通过selector来匹配Pod， targetPort是匹配Pod的端口，也就是where to go，port是Service的端口,也就是where to listen.
   - 多个targetPort: 一个Service可以匹配多个Pod，在service的yaml文件中需要显式的说明port的name和其他信息
   - headless: 通过DNS来访问Pod，service本身不会有ClusterIP，然后返回的是Pod的ClusterIP。 通常用于statefulset，如数据库。
-   - 设置方式：在service的yaml文件中设置 `clusterIP: None`
+  - 设置方式：在service的yaml文件中设置 `clusterIP: None`
   ![alt text](k8s-clusterip.png)
 
   2. NodePort: 通过node的端口来访问Pod，可以在集群外部访问
@@ -120,8 +120,21 @@ Volume是k8s的一个资源，用来存储数据，他是一个抽象的概念�
 ![alt text](k8s-volume.png)
 
 - secret configmap也是volume的一种，是local volume，不需要pvc，他们可以被yaml文件/k8s资源ref。也可以生成文件加载到container中。
+  - secret 还有一种是imagePullSecrets，用来pull私有仓库的镜像。以docker为例, 生成secret的命令是 `kubectl create secret docker-registry my-secret --docker-server=DOCKER_REGISTRY_SERVER --docker-username=DOCKER_USER --docker-password=DOCKER_PASSWORD`，然后在pod的yaml文件中的imagePullSecrets中引用这个secret。缺点是只能对应一个私有仓库，如果有多个私有仓库，需要多个secret。
 
 其他类型： ![alt text](k8s-volumen-types.png)
 
 动态生成Volume： 也就是事先没有分配好具体的物理地址，pvc申请时才分配，一般是云存储。
 ![alt text](k8s-storage-class.png)
+
+
+## StatefulSet
+
+Statefulset同样是k8s的一个资源，用来管理有状态的应用，比如数据库，他和Deployment很像，但是有一些不同：
+
+- statefulset做replicate比deployment要复杂，因为有状态的应用需要保证数据的一致性，所以statefulset会给每个pod分配一个唯一的id (sticky identity)，这个id会在pod重启时保持不变，这样就可以保证数据的一致性。
+- 对于deployment来说，他的pod是无状态的，可以随便删除，重启，每个pod是完全相同和互换的，但是statefulset有一个main pod其他的是replica pod，main pod会先启动，然后再启动replica pod，这样就可以保证数据的一致性。
+
+## Helm
+
+Helm是k8s的包管理器，本质是一个k8s的资源打包工具，他可以把k8s的资源打包成一个chart，然后通过helm来安装，卸载，更新chart，helm的chart是一个目录，里面包含了k8s的资源文件，还有一个values.yaml文件，用来配置k8s资源的参数，这样就可以很方便的部署k8s资源了。

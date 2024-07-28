@@ -39,6 +39,7 @@ docker是虚拟了应用层，没有自己的OS kernel。而虚拟机是虚拟�
   - 推送：docker push repo_name
   - 拉取：docker pull repo_name
   - 运行：docker run repo_name
+  - 拷贝：docker cp /host/path/to/file container_id:/path/to/file  # 从host拷贝到container
 ## 数据库
   ### 常见数据库类型
   1. 关系型数据库 relational database

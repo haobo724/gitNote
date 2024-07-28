@@ -58,4 +58,13 @@
 }
 ```
 `aws iam create-policy --policy-name changePwd --policy-document file://aws-changeword-policy.json`
-  
+
+
+## AWS容器服务
+AWS有三个常用的容器相关的服务，分别是ECR,ECS和EKS。其中ECR是容器镜像仓库，ECS是容器服务，EKS是Kubernetes服务。ECS是AWS自家的容器服务，EKS是Kubernetes服务，EKS是AWS托管的Kubernetes服务，可以让用户不用自己搭建Kubernetes集群，直接使用AWS的Kubernetes服务。 一般来说EKS会好一些，因为k8s是开源的，有很多社区的支持，日后迁移也比较方便，而ECS是AWS自家的服务，插件相对来说会少一些。但是ECS的优点是简单，使用起来比较方便，而且和AWS的其他服务集成的比较好。
+
+### EKS
+
+使用EKS我们需要创建EKS cluster，这个集群是由master（control panel）和work node组成的，master是AWS托管的，work node是我们自己创建的，我们在work node上部署我们的应用。
+
+或者我们使用Fargate部署应用，Fargate是AWS的serverless容器服务，我们不需要关心work node，即配置，autoscaling等，只需要部署我们的应用就可以了。也就是把worknode这块也托管了，灵活度低但是易用性高。

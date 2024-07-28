@@ -20,6 +20,7 @@ Yaml file 是用来定义k8s资源(Deployment)的文件，可以通过 `kubectl 
 
 1. metadata : 包含资源的名字，namespace，labels等信息, namespace可以很好的区分同名资源
    - 通常服务可以跨namespace访问，其他的如secret，configmap等资源是最好不要跨namespace访问，同时volume和node是没有namespace的。
+   - 在使用命名空间之前，确保命名空间存在，可以使用`kubectl get namespace`来查看，如果不存在可以使用`kubectl create namespace my-namespace`来创建。
 2. spec : 包含资源的配置信息，比如容器的镜像，端口，环境变量等, 其中定义具体Pod的信息是在template中定义的，template类似于configuration in configuration
 3. status : 包含资源的状态信息，由k8s自动填充, 是k8s自愈的基础，它在运行中会被k8s自动更新并且和spec保持一致，如果不一致就会被k8s自动修复。信息来源于k8s的apiserver中的etcd数据库。
    - 个人经历： 部署一个mongodb的时候，其中密码的key在secret文件中拼错了，导致createrror，后来改正了secret文件中的key，重新apply secret文件，mongodb自动检测到secret文件的变化，自动修复了密码的问题。
@@ -137,4 +138,27 @@ Statefulset同样是k8s的一个资源，用来管理有状态的应用，比如
 
 ## Helm
 
-Helm是k8s的包管理器，本质是一个k8s的资源打包工具，他可以把k8s的资源打包成一个chart，然后通过helm来安装，卸载，更新chart，helm的chart是一个目录，里面包含了k8s的资源文件，还有一个values.yaml文件，用来配置k8s资源的参数，这样就可以很方便的部署k8s资源了。
+Helm是k8s的包管理器，本质是一个k8s的资源打包工具，他可以把k8s的资源配置文件yaml打包成一个chart(类似于package)，然后通过helm来安装，卸载，更新chart，helm的chart是一个目录，里面包含了k8s的资源文件，还有一个values.yaml文件，用来配置k8s资源的参数, 对于具体k8s资源是根据values.yaml为基础做出对应调整，然后使用命令`helm install -f concreteResource.yaml release-name chartname`来安装chart，这个release-name 是helm管理下的name 而不是k8s里的pod 名称。
+
+Helm本身可以在git管理和存储。
+
+![alt text](k8s-helm.png)
+
+如果要检查生成的模板文件是否正确可以使用`helm template -f concreteResource.yaml chartname`来查看。
+
+因为通常也要执行多次install命令所以可以使用批处理脚本来把命令写好后一步执行。或者使用helmfile，helmfile是一个helm的wrapper，可以用来管理多个helm chart，他的配置文件是一个yaml文件，里面包含了多个chart的配置，然后通过`helmfile apply`来安装所有的chart。 (怎么什么工具都有自己的file啊！)
+
+``` yaml
+#example helmfile.yaml
+releases:
+  - name: my-app
+    chart: my-app
+    values:
+      - concreteResource1.yaml
+      - varName: value
+
+  - name: my-db
+    chart: my-db
+    values:
+      - concreteResource2.yaml
+```

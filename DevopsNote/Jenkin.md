@@ -205,4 +205,22 @@ library identifier: 'my-shared-library@version/branch', retriever: modernSCM(
 @Library('my-shared-library@x.x'#<-这里的x.x是这个Jenkinsfile自定义的) _ //如果下面的语句是pipeline的话，这个下划线是必须的。
 pipeline{...}
 ```
-  
+
+## Jenkins运行kubectl（Deployment）
+注意点，主要是各种凭证验证，很多验证方式取决于k8s运行的平台。
+
+- 在Jenkins中运行kubectl需要安装kubectl，可以在jenkins中安装kubectl插件，也可以在jenkins中安装kubectl，然后在Jenkins中配置kubectl的环境变量。
+- 在Jenkins中运行kubectl需要配置好kubeconfig文件，这个文件是k8s的配置文件，在~/.kube/cofig中。
+- Jenkins运行yaml文件可能会遇到传参问题，这个时候可以在yaml文件中使用环境变量，然后在jenkins中传参。传参可以使用工具envsubst，这个工具可以替换yaml文件中的环境变量，举例：
+  ``` shell
+  envsubst < file.yaml | kubectl apply -f -
+  ```
+- kubectl 在pull docker image时同时也要凭证，这个时候可以使用docker-registry-secret，这个是k8s的secret，可以在k8s中创建，然后在yaml文件中引用。 举例：
+  ``` yaml
+  spec:
+    containers:
+    - name: myapp
+      image: myapp:latest
+    imagePullSecrets:
+    - name: myregistrykey
+  ```

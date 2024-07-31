@@ -94,3 +94,7 @@ EKS是Kubernetes服务。可以让用户不用自己搭建Kubernetes集群，直
 或者我们使用Fargate部署应用，Fargate是AWS的serverless容器服务，我们不需要关心work node，即配置，autoscaling等，只需要部署我们的应用就可以了。也就是把worknode这块也托管了，灵活度低但是易用性高。
 
 使用aws链接EKS集群需要命令行工具kubectl，kubectl是Kubernetes的命令行工具，可以用来和Kubernetes集群交互。如果kubectl，aws cli，安装好了，并且身份验证(aws-iam-authenticator)也配置好了，那么我们就可以使用命令`aws eks --region your-region update-kubeconfig --name my-cluster`来连接到EKS集群。
+
+## boto3
+
+boto3是AWS的python SDK，可以用来和AWS的服务交互，比如创建EC2实例，创建S3 bucket等。

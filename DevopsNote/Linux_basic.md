@@ -1,36 +1,38 @@
 # Linux常用命令
 
 ## 1. 基本操作
-   - ls：查看目录下的文件
-   - cd：切换目录
-     - cd ~：切换到用户主目录
-   - pwd：显示当前目录
-   - mkdir：创建目录
-   - touch：创建文件
-   - cp：复制文件或目录
-     - cp -r：复制目录内所有文件，下同
-   - mv：移动文件或目录/重命名文件或目录
-   - rm：删除文件或目录
-   - cat：查看文件内容
-   - su 用户名：切换用户
-   - exit：退出当前用户
-   - export：设置环境变量(临时)
-     - 永久设置环境变量：在/etc/profile或~/.bashrc中添加export 环境变量， 然后执行source /etc/profile或source ~/.bashrc
-     - 可以将脚本文件加入到path中，然后直接执行脚本文件
+
+- ls：查看目录下的文件
+- cd：切换目录
+  - cd ~：切换到用户主目录
+- pwd：显示当前目录
+- mkdir：创建目录
+- touch：创建文件
+- cp：复制文件或目录
+  - cp -r：复制目录内所有文件，下同
+- mv：移动文件或目录/重命名文件或目录
+- rm：删除文件或目录
+- cat：查看文件内容
+- su 用户名：切换用户
+- exit：退出当前用户
+- export：设置环境变量(临时)
+  - 永久设置环境变量：在/etc/profile或~/.bashrc中添加export 环境变量， 然后执行source /etc/profile或source ~/.bashrc
+  - 可以将脚本文件加入到path中，然后直接执行脚本文件
 
 ## 2. vim编辑器
-   默认是command模式，按i进入编辑模式，按esc退出编辑模式，输入:wq保存并退出，:q!不保存退出
 
-   在command模式下：
-   - <行>G：跳转到指定行
-   - gg：跳转到文件开头
-   - G：跳转到文件结尾
-   - dd：删除当前行
-   - yy：复制当前行
-   - p：粘贴
-   - u：撤销
-   - /关键字：查找关键字，n查找下一个，N查找上一个
-   - :set nu：显示行号
+  默认是command模式，按i进入编辑模式，按esc退出编辑模式，输入:wq保存并退出，:q!不保存退出
+
+  在command模式下：
+- <行>G：跳转到指定行
+- gg：跳转到文件开头
+- G：跳转到文件结尾
+- dd：删除当前行
+- yy：复制当前行
+- p：粘贴
+- u：撤销
+- /关键字：查找关键字，n查找下一个，N查找上一个
+- :set nu：显示行号
   
 ## 3. 文件/用户权限
 
@@ -85,7 +87,7 @@ history | grep 'vim' > vim.txt
 
 ## shell file
 
-    注意空格，shell文件中的空格很重要，不能随意添加或删除空格
+  注意空格，shell文件中的空格很重要，不能随意添加或删除空格
 
     - #!/bin/bash：指定解释器
     - echo：输出
@@ -111,3 +113,10 @@ history | grep 'vim' > vim.txt
         command
     }
 
+传递密码的技巧:
+
+```shell 
+
+echo "password" | docker login --username username --password-stdin
+
+```

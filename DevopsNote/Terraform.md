@@ -9,12 +9,31 @@ Terraform配置文件使用HCL（HashiCorp Configuration Language）编写，它
 
 ## 目录结构
 
-Terraform 有.tf文件和.tfstate文件。.tf文件是配置文件，.tfstate文件是状态文件，用来记录当前基础设施的状态。
+Terraform 有`.tf`文件和`.tfstate`文件。`.tf`文件是配置文件，`.tfstate`文件是状态文件，用来记录当前基础设施的状态。
+
+`tfstate`文件一般是本地储存，所以在团队协作时，需要使用远程存储，比如AWS S3，Google Cloud Storage等，这个定义在`backend`中。
+
+```json
+terraform {
+  backend "s3" {
+    bucket = "mybucket"
+    key    = "path/to/my/key"
+    region = "us-west-1"
+  }
+}
+```
+
+这样使用同一个`tfstate`文件，可以避免多人同时操作时的冲突。在本地执行`terraform init`和`terraform state list`时，会自动下载`tfstate`文件，但是多人同时操作时，可能会有冲突，所以在选择存储时最好选择有locking的存储，比如aws S3。
+
+！！任何时候都不要手动修改`tfstate`文件！！
 
 同时还有一个.lock.hcl文件，用来记录当前terraform的版本。
 还有初始化后生成的.terraform文件夹，用来存放terraform的插件和缓存。
 
 ![alt text](tf-structure.png)
+
+
+值得注意的是，对于aws，可能包括其他平台，使用terraform时验证时在背后自动执行的。所以需要配置好aws cli，或者使用环境变量。
 
 ## Syntax
 

@@ -6,6 +6,8 @@
 - 子网：subnet，根据VPC的防火墙配置，子网根据访问性质划分，公有子网和私有子网
  ![alt text](aws-subnet.png)
   - 子网掩码： 举例172.31.15.0/20，20表示前20位是网络地址，后12位是主机地址 ， 从这里可以简单计算 11111111 11111111 00001111 00000000 = 172.31.15.0 前20位锁死，后12位可以变化，所以可分配的IP地址是2^12-2=4094个，也就是范围从 172.31.0.1 - 172.31.15.254，其中0和255分别是网络地址和广播地址，不可分配。
+  - 路由表和网关 ： 每个子网有一个路由表，路由表中有一个默认路由，指向一个网关，这个网关可以是一个NAT网关，也可以是一个Internet网关，NAT网关用于私有子网访问外网，Internet网关用于公有子网访问外网。 路由表的作用是根据目的地址决定下一跳地址，像地图一样，如果目的地址是外网，那么下一跳地址就是Internet网关，如果目的地址是内网，那么下一跳地址就是NAT网关。
+
 
 ## AWS CLI
 
@@ -90,3 +92,5 @@ EKS是Kubernetes服务。可以让用户不用自己搭建Kubernetes集群，直
 使用EKS我们需要创建EKS cluster，这个集群是由master（control panel）和work node组成的，master是AWS托管的，work node是我们自己创建的，我们在work node上部署我们的应用。
 
 或者我们使用Fargate部署应用，Fargate是AWS的serverless容器服务，我们不需要关心work node，即配置，autoscaling等，只需要部署我们的应用就可以了。也就是把worknode这块也托管了，灵活度低但是易用性高。
+
+使用aws链接EKS集群需要命令行工具kubectl，kubectl是Kubernetes的命令行工具，可以用来和Kubernetes集群交互。如果kubectl，aws cli，安装好了，并且身份验证(aws-iam-authenticator)也配置好了，那么我们就可以使用命令`aws eks --region your-region update-kubeconfig --name my-cluster`来连接到EKS集群。

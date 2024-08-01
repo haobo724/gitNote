@@ -98,3 +98,34 @@ EKS是Kubernetes服务。可以让用户不用自己搭建Kubernetes集群，直
 ## boto3
 
 boto3是AWS的python SDK，可以用来和AWS的服务交互，比如创建EC2实例，创建S3 bucket等。
+
+### 监测EC2实例
+
+``` python
+import boto3
+
+ec2 = boto3.client('ec2')
+instances = ec2.describe_instances() 
+for instance in instances['Reservations']:
+    for instance in instance['Instances']:
+        print(instance['InstanceId'])
+```
+
+如果有多个instance，可以在`describe_instances()`中加入`Filters`参数来筛选特定的instance。
+
+``` python
+
+import boto3
+
+ec2 = boto3.client('ec2')
+instances = ec2.describe_instances(
+    Filters=[
+        {
+            'Name': 'instance-state-name',
+            'Values': ['running']
+        }
+    ]
+) 
+.....
+
+```

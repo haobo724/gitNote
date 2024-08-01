@@ -1,17 +1,19 @@
 import boto3
 
-def get_instance_state_by_key(instance:dict,key):
+def get_instance_state_by_key(instance:dict,key,parent_key=[]):
     if type(instance) == list:
         if len(instance) == 0:
             return None
         instance = instance[0]
     if key in instance.keys():
-        return instance[key]
+        return instance[key],parent_key
     else:
         for k in instance.keys():
-            result = get_instance_state_by_key(instance[k],key)
+            parent_key.append(k)
+            result = get_instance_state_by_key(instance[k],key,parent_key)
             if result != None:
-                return result
+                return result, parent_key
+            parent_key.remove(k)    
     
 
 if __name__ == "__main__":
@@ -19,5 +21,6 @@ if __name__ == "__main__":
     response = ec2.describe_instances()
     
     instance = response["Reservations"]
-    id = get_instance_state_by_key(instance,"State")
+    id,parent_key = get_instance_state_by_key(instance,"State")
     print(id)
+    print(parent_key)

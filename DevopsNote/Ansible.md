@@ -28,3 +28,10 @@ ansible_ssh_private_key_file=~/.ssh/id_rsa
 ansible_ssh_user=ubuntu
 ansible_ssh_private_key_file=~/.ssh/id_rsa
 ```
+
+同时也可以配置ansible.cfg文件，这个文件默认全局配置位于`/etc/ansible/ansible.cfg`，ansible运行时会先检查ansible命令的目录中是否有ansible.cfg文件，如果不存在该文件，则检查用户的主目录（~/.）中是否有ansible.cfg文件，在找不到其他配置文件时，使用全局/etc/ansible/ansible.cfg文件（似乎已弃用），如果都不存在，ansible包含它使用的默认值。
+
+```ini
+[defaults]
+host_key_checking = False
+```

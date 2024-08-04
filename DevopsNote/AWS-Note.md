@@ -8,7 +8,6 @@
   - 子网掩码： 举例172.31.15.0/20，20表示前20位是网络地址，后12位是主机地址 ， 从这里可以简单计算 11111111 11111111 00001111 00000000 = 172.31.15.0 前20位锁死，后12位可以变化，所以可分配的IP地址是2^12-2=4094个，也就是范围从 172.31.0.1 - 172.31.15.254，其中0和255分别是网络地址和广播地址，不可分配。
   - 路由表和网关 ： 每个子网有一个路由表，路由表中有一个默认路由，指向一个网关，这个网关可以是一个NAT网关，也可以是一个Internet网关，NAT网关用于私有子网访问外网，Internet网关用于公有子网访问外网。 路由表的作用是根据目的地址决定下一跳地址，像地图一样，如果目的地址是外网，那么下一跳地址就是Internet网关，如果目的地址是内网，那么下一跳地址就是NAT网关。
 
-
 ## AWS CLI
 
 - 安装参考官网
@@ -45,13 +44,13 @@
 
    `aws ec2 create-key-pair --key-name MyKeyPair --output text > MyKeyPair.pem`
 
- - aws ec2 run-instances
-   --image-id ami-0346fd83e3383dcb4
-   --count 1
-   --instance-type t2.micro
-   --key-name MyKPCli
-   --security-group-ids sg-0a8288ea515970965 
-   --subnet-id subnet-03b57da1373d0191b
+- aws ec2 run-instances
+ --image-id ami-0346fd83e3383dcb4
+ --count 1
+ --instance-type t2.micro
+ --key-name MyKPCli
+ --security-group-ids sg-0a8288ea515970965
+ --subnet-id subnet-03b57da1373d0191b
 
 ### 创建策略
 

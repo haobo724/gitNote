@@ -1,0 +1,81 @@
+---
+- name: update repo
+  hosts: all
+  tasks:
+    - name: update repo
+      apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
+    - name: Install java
+      apt: name=openjdk-8-jdk state=present
+    - name: Install net-tools
+      apt: name=net-tools state=present
+
+- name: Download and unpack Nexus 
+  hosts: all
+  tasks:
+    - name: check Nexus folder
+      stat:
+        path: /opt/nexus
+      register: nexus_stat
+    - debug: msg="{{nexus_stat.stat.exists}}"
+    - name: Download Nexus
+      get_url: url=https://download.sonatype.com/nexus/3/latest-unix.tar.gz dest=/opt/nexus.tar.gz
+    - name: Unpack Nexus
+      unarchive: src=/opt/nexus.tar.gz dest=/opt
+      when: nexus_stat.stat.exists == False
+
+# Just demonstrate how to use find + register + when
+# - name: Find Nexus folder
+#   find:
+#     paths: /opt
+#     patterns: "nexus-*"
+#     file_type: directory
+#   register: nexus_folder
+# - name: rename Nexus
+#   hosts: all
+#   tasks:
+#     - name: rename Nexus
+#       command: mv {{nexus_folder.files[0].path}} /opt/nexus
+#       when: nexus_stat.stat.exists == False
+- name: Create Nexus user
+  hosts: all
+  tasks:
+    - name: Group
+      group: name=nexus state=present
+    - name: User
+      user: name=nexus group=nexus home=/opt/nexus shell=/bin/bash state=present
+    - name: Change owner
+      file: path=/opt/nexus owner=nexus group=nexus state=directory recurse=yes
+    - name: Change owner for sonatype-work
+      file: path=/opt/sonatype-work owner=nexus group=nexus state=directory recurse=yes
+
+- name: start nexus with the nexus user
+  hosts: all
+  become: True
+  become_user: nexus
+  tasks:
+    - name: cha
+    - name: set run_as_user nexus
+      blockinfile: #这个模块可以在文件中插入一段文本
+        path: /opt/nexus/bin/nexus.rc
+        block: | #这是yaml的多行字符串
+          run_as_user="nexus"
+      lineinfile: #这个模块可以在文件中查找一行文本并替换,选一个即可
+        path: /opt/nexus/bin/nexus
+        regexp: '^run_as_user=.*'
+        line: run_as_user="nexus"
+    - name: start nexus
+      command: /opt/nexus/bin/nexus start
+
+- name: valid nexus
+  hosts: all
+  tasks:
+    - name: wait for nexus to start
+      pause: seconds=30
+    - name: Check with present
+      command: ps aux | grep nexus
+      register: nexus_status
+    - debug: msg="{{nexus_status.stdout}}"
+    - name: check with net-tools
+      command: netstat -lpnt
+      register: nexus_port
+    - debug: msg="{{nexus_port.stdout}}"

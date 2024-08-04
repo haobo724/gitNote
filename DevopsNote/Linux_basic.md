@@ -24,6 +24,7 @@
   默认是command模式，按i进入编辑模式，按esc退出编辑模式，输入:wq保存并退出，:q!不保存退出
 
   在command模式下：
+  
 - <行>G：跳转到指定行
 - gg：跳转到文件开头
 - G：跳转到文件结尾
@@ -36,33 +37,37 @@
   
 ## 3. 文件/用户权限
 
-    Linux 一般有三种用户 root、普通用户、服务用户。
-    对于用户，一般把用户先添加到组，然后控制组的权限。
-    - adduser：添加用户
-    - addgroup：添加组
-    - usermod -g 组名 用户名：修改用户所属主组
-      - usermod -G 组名 用户名：添加用户到附加组
-      - usermod -aG 组名 用户名：添加用户到附加组，不会删除原有附加组
+Linux 一般有三种用户 root、普通用户、服务用户。
+对于用户，一般把用户先添加到组，然后控制组的权限。
 
-    - ls -l：查看文件权限
-      - r：读权限
-      - w：写权限
-      - x：执行权限
-      - d：目录 (first character)
-      - l：软链接 (first character)
-      - s：socket
-      - p：管道
-      - c：字符设备 (first character)
-      - b：块设备
-      - - : 普通文件 (first character)
-    文件权限分为三组：所有者、同组用户、其他用户 owner group other 缩写为 u g o，或者使用a表示所有用户
-    通过+/- 来增加或删除权限，通过=来设置权限
-   - chmod：修改文件权限
-     - chmod 777：所有用户都有读写执行权限 原理为： rwxrwxrwx 111 111 111 即7 7 7
-     - chmod 755：所有者有读写执行权限，同组用户和其他用户有读和执行权限 原理为：rwxr-xr-x 111 101 101 即7 5 5
-     - chmod 644：所有者有读写权限，同组用户和其他用户有读权限 原理为：rw-r--r-- 原理为110 100 100 即6 4 4
-   - chown：修改文件所有者
-   - chgrp：修改文件所属组
+- adduser：添加用户
+- addgroup：添加组
+- usermod -g 组名 用户名：修改用户所属主组
+  - usermod -G 组名 用户名：添加用户到附加组
+  - usermod -aG 组名 用户名：添加用户到附加组，不会删除原有附加组 ,但都是要重启生效
+- gpasswd：修改用户密码
+  - d: 删除用户
+- groups：查看用户所属组
+
+- ls -l：查看文件权限
+  - r：读权限
+  - w：写权限
+  - x：执行权限
+  - d：目录 (first character)
+  - l：软链接 (first character)
+  - s：socket
+  - p：管道
+  - c：字符设备 (first character)
+  - b：块设备
+
+文件权限分为三组：所有者、同组用户、其他用户 owner group other 缩写为 u g o，或者使用a表示所有用户, 通过+/- 来增加或删除权限，通过=来设置权限
+
+- chmod：修改文件权限
+  - chmod 777：所有用户都有读写执行权限 原理为： rwxrwxrwx 111 111 111 即7 7 7
+  - chmod 755：所有者有读写执行权限，同组用户和其他用户有读和执行权限 原理为：rwxr-xr-x 111 101 101 即7 5 5
+  - chmod 644：所有者有读写权限，同组用户和其他用户有读权限 原理为：rw-r--r-- 原理为110 100 100 即6 4 4
+- chown：修改文件所有者
+- chgrp：修改文件所属组
 
 ## 4. pipe管道
 
@@ -89,39 +94,40 @@ history | grep 'vim' > vim.txt
 
 ## shell file
 
-  注意空格，shell文件中的空格很重要，不能随意添加或删除空格
+注意空格，shell文件中的空格很重要，不能随意添加或删除空格
 
-    - #!/bin/bash：指定解释器
-    - echo：输出
-    - read：读取输入
-      - -p：提示信息
-    - $1 $2 ...：获取参数
-      - $*：获取所有参数
-      - $#：获取参数个数
-    - if [ condition ]
-      then
+- #!/bin/bash：指定解释器
+- echo：输出
+- read：读取输入
+  - -p：提示信息
+- $1 $2 ...：获取参数
+  - $*：获取所有参数
+  - $#：获取参数个数
+- if [ condition ]
+  then
+    command
+  fi
+- for var in list
+    do
         command
-      fi
-    - for var in list
-        do
-            command
-        done
-    - while [ condition ]
-        do
-            command
-        done
+    done
+- while [ condition ]
+    do
+        command
+    done
 
-    - function func_name(){
-        command
-    }
+- function func_name(){
+    command
+}
 
 传递密码的技巧:
 
-```shell 
+```shell
 
 echo "password" | docker login --username username --password-stdin
 
 ```
+
 ## ssh命令
 
 - ssh：连接远程主机

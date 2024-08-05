@@ -1,0 +1,18 @@
+---
+- name: Deploy a Kubernetes cluster
+  hosts: localhost
+  tasks:
+    - name: Create a Kubernetes namespace
+      community.kubernetes.k8s:
+        name: my-app
+        apiVersion: v1
+        kind: Namespace
+        state: present
+        kubeconfig: path/to/kubeconfig
+    - name: Deploy a nginx my-app
+      community.kubernetes.k8s:
+        src: my-app.yaml #之前写好的k8s yaml文件, 当然也可以在这里完全手写，没必要。
+        state: present
+        kubeconfig: path/to/kubeconfig
+        namespace: my-app
+        

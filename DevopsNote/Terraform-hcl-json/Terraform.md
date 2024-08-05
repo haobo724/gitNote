@@ -6,7 +6,6 @@ Terraform配置文件使用HCL（HashiCorp Configuration Language）编写，它
 
 一个很好的例子是，你创建了一个服务器在AWS上，甚至启动了一个服务（比如通过user_data），但是后续的debug和维护就不（应该）是terraform的事情了，terraform只负责创建和删除资源。
 
-
 ## 目录结构
 
 Terraform 有`.tf`文件和`.tfstate`文件。`.tf`文件是配置文件，`.tfstate`文件是状态文件，用来记录当前基础设施的状态。
@@ -32,7 +31,6 @@ terraform {
 
 ![alt text](tf-structure.png)
 
-
 值得注意的是，对于aws，可能包括其他平台，使用terraform时验证时在背后自动执行的。所以需要配置好aws cli，或者使用环境变量。
 
 ## Syntax
@@ -40,9 +38,18 @@ terraform {
 HCL类似于JSON，但是更加人类可读。HCL的基本语法如下：
 
 ```json
+resource "aws_vpc" "my_vpc" {
+  cidr_block = "10..0.0.0/16"
+  enable_dns_hostsnames = true
+  tags = {
+    Name = "my_vpc"
+  }
+}
+
 resource "aws_instance" "example" {
   ami           = "ami-0c55b159cbfafe1f0"
   instance_type = "t2.micro"
+  vpc_id        = aws_vpc.my_vpc.id
 }
 ```
 
@@ -150,7 +157,6 @@ resource "aws_key_pair" "example" {
 }
 ```
 
-
 ### Environment variables
 
 可以使用环境变量来传递变量，具体环境变量名查阅官方文档。主要动机还是为了避免硬编码。
@@ -158,6 +164,7 @@ resource "aws_key_pair" "example" {
 ```bash
 export TF_VAR_region=us-west-1
 ```
+
 可是这是临时的。如果要永久的，可以在`~/.bashrc`或者`~/.bash_profile`中添加。
 或者使用aws cli的profile，这样terraform会自动使用aws cli的profile。
 
@@ -178,7 +185,7 @@ resource "aws_instance" "example" {
 }
 ```
 
-## Provisioner (不推荐使用)
+## Provisioner (一般不推荐使用)
 
 Provisioner是用来在资源创建后执行一些操作的。比如在创建EC2实例后，执行一些命令，或者上传文件等。
 
@@ -222,10 +229,50 @@ resource "aws_instance" "example" {
 }
 ```
 
+### Ansible
+
+可以在terraform使用专业的configuration工具ansible
+
+```json
+resource "aws_instance" "example" {
+  ami           = "ami-0c55b159cbfafe1f0"
+  instance_type = "t2.micro"
+
+provisioner "local-exec" {
+  working_dir = "/path/to/folder/with/ansible/playbook"
+  command =  "ansible-playbook --inventory ${self.public_ip}, --private-key ${var.private_key} --user ec2-user playbook.yml"
+
+  #这样在ansible中host要指定为all才可以正确接收到self.public_ip
+}
+}
+```
+
+#### null_resource
+
+如果想在创建资源后执行一些操作，但是不想在资源上执行，可以使用null_resource。
+
+```json
+resource "aws_instance" "example" {
+  ami           = "ami-0c55b159cbfafe1f0"
+  instance_type = "t2.micro"
+}
+
+resource "null_resource" "example" {
+ triggers = {
+    trigger = aws_instance.example.public_ip
+  }
+
+ provisioner "local-exec" {
+  working_dir = "/path/to/folder/with/ansible/playbook"
+  command =  "ansible-playbook --inventory ${aws_instance.example.public_ip}, --private-key ${var.private_key} --user ec2-user playbook.yml"
+
+  # 注意这里的变量引用
+}
+```
+
 ## Modules
 
 Modules是用来组织terraform配置文件的。可以把一些常用的配置文件组织成一个module，然后在其他配置文件中引用，类比helm的chart。应该有四个文件，main.tf, variables.tf, outputs.tf, providers.tf.
-
 
 - variables.tf 在module中定义，同时也要在root中定义，因为要引用.
 - source是module的路径，可以是相对路径(记得加 ./) ，也可以是git地址。

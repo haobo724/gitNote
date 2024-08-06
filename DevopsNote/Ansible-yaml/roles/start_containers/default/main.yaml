@@ -1,0 +1,3 @@
+docker_registry_url: "https://hub.docker.com"
+docker_username: abc
+docker_password: abc

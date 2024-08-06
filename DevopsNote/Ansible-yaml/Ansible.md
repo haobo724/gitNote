@@ -273,3 +273,20 @@ keyed_groups: # 可以通过key指定的aws_instance属性来分组
 
 然后在cfg文件中配置好aws的credentials和在playbook模块中指定hosts为plugin中返回的名字即可。
 然后运行命令：`ansible-playbook -i inventory_aws_ec2.yml playbook.yml` (也可以在playbook中指定hosts为`inventory_aws_ec2.yml`，这样就不用在命令行中指定了。)
+
+## Roles
+
+Roles是Ansible的一种组织方式，可以把一组任务组织在一起，类比k8s的helm, terraform的module，使用的动机和场景就是对配置文件的复用。当然社区如Ansible-Galaxy和Git也有很多现成的roles可以直接使用。
+
+Roles的目录结构如下：
+
+![alt text](ansible-role.png)
+
+- common: 自定义名称，爱叫什么叫什么
+- tasks: 名称自定义，但必须包含main.yml文件
+- handlers（optional）: 包含所有的handlers
+- files（optional）: 包含所有的文件
+- templates（optional）: 包含所有的模板
+- vars（optional）: 包含所有的变量,优先级低于命令行
+- defaults（optional）: 包含所有的默认变量，优先级低于vars
+- library（optional）: 包含所有的自定义模块,python文件

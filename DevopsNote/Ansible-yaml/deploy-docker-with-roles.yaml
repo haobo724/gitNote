@@ -1,0 +1,7 @@
+---
+
+- name: Create a Linux user
+  hosts: localhost
+  become: yes
+  roles:
+    - create_user # 名字要对应上

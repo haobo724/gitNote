@@ -1,0 +1,12 @@
+- name: Copy docker compose file
+  copy:
+    src: docker-compose.yaml #从files文件夹中寻找
+    dest: /opt/docker-compose.yaml
+- name: Start containers
+  docker_login:
+    username: "{{ docker_username }}"
+    password: "{{ docker_password }}"
+    registry_url: "{{ docker_registry_url }}"
+- name: Start containers
+  docker_compose:
+    project_src: /opt

@@ -1,0 +1,41 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  namespace: monitoring
+  name: main-rules #资源名称
+  labels:
+    app: kube-prometheus-stack 
+    release: monitoring
+spec:
+  groups:
+  - name: main-rules
+    rules:
+    - alert: HostHighCpuUsage
+      expr: 100- (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) >50
+      for: 2m
+      labels:
+        severity: warning
+        namespace: monitoring
+      annotations:
+        summary: "Host High Cpu Usage"
+        description: "Host High Cpu Usage on \n Value: {{ $value }} \n"
+    - alert: k8sPodCrashLooping
+      expr: kube_pod_container_status_restarts_total > 5
+      for: 0m
+      labels:
+        severity: critical
+        namespace: monitoring
+      annotations:
+        summary: "Pod CrashLooping"
+        description: "Pod {{ $labels.pod }} CrashLooping on \n Value: {{ $value }} \n"
+
+
+# 如果不在k8s中，可以直接在prometheus中配置
+# name: HostHighCpuUsage
+# expr: 100- (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) >50
+# for: 2m
+# labels:
+#   severity: warning
+# annotations:
+#   summary: "Host High Cpu Usage"
+#   description: "Host High Cpu Usage on \n Value: {{ $value }} \n"

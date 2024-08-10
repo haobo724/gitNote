@@ -32,79 +32,84 @@ Yaml file 是用来定义k8s资源(Deployment)的文件，可以通过 `kubectl 
 
 ## Deployment 和 service的关系
 
-- 一句话概括：Deployment是Pod的管理器，Service是Pod的访问器
-  - 如果Pod挂了，Deployment会自动创建新的Pod
-  - 如果你的Pod不需要外部访问，那么就不需要Service
+一句话概括：Deployment是Pod的管理器，Service是Pod的访问器
 
-- 链接方式:
-  - Deployment和Service通过label来关联，Deployment中的selector和Service中的selector是一样的，这样Service就知道要访问哪些Pod了
-  - 举例：
-  
-  ``` yaml
-    # Deployment.yaml
-    apiVersion: apps/v1
-    kind: Deployment
-    metadata:
-      name: my-app
-    spec:
-      replicas: 3
-      selector:
-        matchLabels:
-          app: my-app # 这个必须和Service的selector中的标签一致
-      template:
-        metadata:
-          labels:
-            app: my-app # 这个必须和Service的selector中的标签一致
-        spec:
-          containers:
-          - name: my-app # 这个是container的名字，无所谓
-            image: my-app-image
-            ports:
-            - containerPort: 80
-  ```
+   - 如果Pod挂了，Deployment会自动创建新的Pod
+   - 如果你的Pod不需要外部访问，那么就不需要Service
 
-  可以看出这个selector中待匹配的标签为 `my-app` 所以服务的selector也应该是 `my-app`
+链接方式:
 
-  ``` yaml
-  apiVersion: v1
-  kind: Service
-  metadata:
-    name: my-app-service
-  spec:
-    selector:
-      app: my-app # 这个必须和Deployment的selector中的标签一致
-    ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
-    type: ClusterIP
-  ```
+   - Deployment和Service通过label来关联，Deployment中的selector和Service中的selector是一样的，这样Service就知道要访问哪些Pod了
+   - 举例：
+
+``` yaml
+ # Deployment.yaml
+ apiVersion: apps/v1
+ kind: Deployment
+ metadata:
+   name: my-app
+ spec:
+   replicas: 3
+   selector:
+     matchLabels:
+       app: my-app # 这个必须和Service的selector中的标签一致
+   template:
+     metadata:
+       labels:
+         app: my-app # 这个必须和Service的selector中的标签一致
+     spec:
+       containers:
+       - name: my-app # 这个是container的名字，无所谓
+         image: my-app-image
+         ports:
+         - containerPort: 80
+```
+
+可以看出这个selector中待匹配的标签为 `my-app` 所以服务的selector也应该是 `my-app`
+
+``` yaml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-app-service
+spec:
+  selector:
+    app: my-app # 这个必须和Deployment的selector中的标签一致
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: ClusterIP
+```
 
       需要说明的是这个service是ClusterIP类型的，即“internal service” 它映射的不是本机端口，他只是在node内部，也就是集群内部访问，如果要外部访问，需要使用NodePort或者LoadBalancer类型的Service。
 
       但是即便是NodePort类型的Service，在minikube里需要额外的使用命令`minikube service my-app-service`来访问，因为minikube是一个虚拟环境，需要手动给他分配一个external ip.
       但是一般也不会用NodePort，因为NodePort不太安全，通常用LoadBalancer或者Ingress，在minikube中使用ingress同样是tunnel的方式，即配置好ingress后，使用`minikube tunnel`激活ingress，然后就可以通过ingress的ip访问了。
-  ### Service的类型
 
-  1. ClusterIP: 默认类型，只能在集群内部访问
-  - 匹配方式：通过selector来匹配Pod， targetPort是匹配Pod的端口，也就是where to go，port是Service的端口,也就是where to listen.
-  - 多个targetPort: 一个Service可以匹配多个Pod，在service的yaml文件中需要显式的说明port的name和其他信息
-  - headless: 通过DNS来访问Pod，service本身不会有ClusterIP，然后返回的是Pod的ClusterIP。 通常用于statefulset，如数据库。
-  - 设置方式：在service的yaml文件中设置 `clusterIP: None`
-  ![alt text](k8s-clusterip.png)
+### Service的类型
 
-  2. NodePort: 通过node的端口来访问Pod，可以在集群外部访问
-  - 匹配方式：通过selector来匹配Pod， targetPort是匹配Pod的端口，也就是where to go，port是Service的端口,也就是where to listen. nodePort是node的端口，也就是where to access，他的范围是30000-32767。port和nodeport是映射关系,见下图loadbalancer.
-  - 通过 `minikube service my-app-service` 来访问
-  - nodeport不太安全，通常用于测试，现实中常用LoadBalancer或者Ingress
-  
-  3. LoadBalancer: 通过云服务商的负载均衡器来访问Pod，可以在集群外部访问
-     - 比nodeport更合适，因为入口是负载均衡器，可以做一些安全控制，并不是client直接访问nodeport。
-   ![alt text](k8s-loadbalancer.png)
+1. ClusterIP: 默认类型，只能在集群内部访问
+   - 匹配方式：通过selector来匹配Pod， targetPort是匹配Pod的端口，也就是where to go，port是Service的端口,也就是where to listen.
+   - 多个targetPort: 一个Service可以匹配多个Pod，在service的yaml文件中需要显式的说明port的name和其他信息
+   - headless: 通过DNS来访问Pod，service本身不会有ClusterIP，然后返回的是Pod的ClusterIP。 通常用于statefulset，如数据库。
+   - 设置方式：在service的yaml文件中设置 `clusterIP: None`
+   ![alt text](k8s-clusterip.png)
 
-   总结：
+2. NodePort: 通过node的端口来访问Pod，可以在集群外部访问
+   - 匹配方式：通过selector来匹配Pod， targetPort是匹配Pod的端口，也就是where to go，port是Service的端口,也就是where to listen. nodePort是node的端口，也就是where to access，他的范围是30000-32767。port和NodePort是映射关系,见下图loadbalancer.
+   - 如果是本地部署的minikube要通过 `minikube service my-app-service` 来访问
+   - NodePort不太安全，通常用于测试，现实中常用LoadBalancer或者Ingress
 
-   ![alt text](k8s-services-wrap-up.png)
+3. LoadBalancer: 通过云服务商的负载均衡器来访问Pod，可以在集群外部访问
+   - 比nodeport更合适，因为入口是负载均衡器，可以做一些安全控制，并不是client直接访问nodeport。
+  ![alt text](k8s-loadbalancer.png)
+
+  总结：
+
+  ![alt text](k8s-services-wrap-up.png)
+
 ## Ingress
 
 Ingress是k8s的一个资源，用来管理外部访问，他是一个集群内的HTTP和HTTPS路由器，可以根据域名和路径来转发请求到不同的Service上，Ingress是一个集群内的资源，所以需要一个Ingress Controller来处理Ingress资源，Ingress Controller是一个独立的Pod，他会监听Ingress资源的变化，然后根据Ingress资源的配置来配置负载均衡器，Ingress Controller可以是Nginx，Traefik，HAProxy等。
@@ -127,7 +132,6 @@ Volume是k8s的一个资源，用来存储数据，他是一个抽象的概念�
 
 动态生成Volume： 也就是事先没有分配好具体的物理地址，pvc申请时才分配，一般是云存储。
 ![alt text](k8s-storage-class.png)
-
 
 ## StatefulSet
 

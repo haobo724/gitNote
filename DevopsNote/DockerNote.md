@@ -1,9 +1,11 @@
 # 概念
 
 ## Best Practice
+
 FROM nana
 
 ![alt text](Docker-useful-tipps.png)
+
 ## 与虚拟机的不同
 
 一般来说计算机系统可以分为两个部分
@@ -33,7 +35,7 @@ docker是虚拟了应用层，没有自己的OS kernel。而虚拟机是虚拟�
 
 ## 常见命令
 
-- 登录：docker login -u username -p password 
+- 登录：docker login -u username -p password
  - 默认是docker hub ， 如果是其他的registries，可以在最后添加`registry_url`docker login registry_url
 - 构建：docker build -t repo_name .
  - 推送的时候需要tag repo_name ，这个tag也正好指向了要推给哪个repository，例如：docker -t repo_url/repo_name:tag, 如果image_name 不是 repo_url/repo_name:tag的形式，那么推送会失败

@@ -16,6 +16,8 @@ https://docs.openshift.com/container-platform/4.16/rest_api/monitoring_apis/aler
 如何用Prometheus监控第三方应用程序，关键是exporter：
 ![alt text](prometheus-thrid-party.png)
 
+并且在自己编写的第三方程序中，代码层级的metric当然需要自己编写，具体到不同的编程语言可以参见不同的client库。 如Python的prometheus_client库。并且要配置好可以scraper的endpoint，默认是`/metrics`
+
 同样使用rules时也不必重复造轮子，有一些网站提供了一些规则的模板，可以直接使用：
 如 awesome-prometheus-alerts：https://awesome-prometheus-alerts.grep.to
 
